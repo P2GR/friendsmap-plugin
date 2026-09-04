@@ -158,7 +158,7 @@ public class FriendsMapPlugin extends Plugin
 		}
 
 		simulatedProvider = new SimulatedLocationProvider();
-		friendsMapClient = new FriendsMapClient();
+		friendsMapClient = injector.getInstance(FriendsMapClient.class);
 		collector = injector.getInstance(FriendDataCollector.class);
 		mapPointService = injector.getInstance(MapPointService.class);
 

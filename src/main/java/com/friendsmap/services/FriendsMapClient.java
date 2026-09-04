@@ -5,12 +5,12 @@
 package com.friendsmap.services;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
+import javax.inject.Inject;
 import com.friendsmap.model.HeartbeatPayload;
 import com.friendsmap.model.HeartbeatResponse;
 
@@ -28,10 +28,12 @@ public class FriendsMapClient
 	public static final String BASE_URL = "https://map.mss54.com";
 
 	private final HttpClient httpClient;
-	private final Gson gson = new GsonBuilder().serializeNulls().create();
+	private final Gson gson;
 
-	public FriendsMapClient()
+	@Inject
+	public FriendsMapClient(Gson gson)
 	{
+		this.gson = gson.newBuilder().serializeNulls().create();
 		this.httpClient = HttpClient.newBuilder()
 			.connectTimeout(Duration.ofSeconds(3))
 			.build();
