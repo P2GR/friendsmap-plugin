@@ -18,16 +18,21 @@ import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledExecutorService;
 import javax.inject.Inject;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.Player;
+import net.runelite.api.WorldType;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.GameTick;
+import net.runelite.api.gameval.VarbitID;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.plugins.PluginManager;
 import net.runelite.client.ui.overlay.OverlayManager;
 import com.friendsmap.model.FriendLocation;
 import com.friendsmap.model.HeartbeatPayload;
@@ -56,6 +61,7 @@ public class FriendsMapPlugin extends Plugin
 {
 	private static final String LOG_CATEGORY = "friendsmap";
 	private static final String INTERNAL_TOKEN_KEY = "internalToken";
+	private static final String CONSENT_KEY = "dataConsentShown";
 	private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm:ss");
 
 	/** Poll every 4 game ticks (~2 seconds). Locked. */
@@ -80,6 +86,9 @@ public class FriendsMapPlugin extends Plugin
 	private Injector injector;
 
 	@Inject
+	private PluginManager pluginManager;
+
+	@Inject
 	private ScheduledExecutorService executor;
 
 	/** Snapshot of visible friends. Single source of truth for all renderers. */
@@ -102,6 +111,8 @@ public class FriendsMapPlugin extends Plugin
 	private volatile String lastResponseLog = "-";
 	private String modeLabel = "LIVE";
 	private String internalToken = "";
+	private volatile boolean consentGranted;
+	private volatile boolean consentPending;
 
 	/** Offline friends: keep last known position, faded, for OFFLINE_HOLD. Client thread only. */
 	private final Map<String, OfflineHold> offlineHolds = new HashMap<>();
@@ -115,10 +126,35 @@ public class FriendsMapPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
+		consentGranted = false;
+		consentPending = false;
+
+		String consent = configManager.getConfiguration(FriendsMapConfig.GROUP, CONSENT_KEY);
+		if ("true".equals(consent))
+		{
+			consentGranted = true;
+		}
+		else if ("false".equals(consent))
+		{
+			// Previously denied: stay disabled.
+			pluginManager.setPluginEnabled(this, false);
+			return;
+		}
+		else
+		{
+			consentPending = true;
+			SwingUtilities.invokeLater(this::showDataConsentDialog);
+		}
+
 		internalToken = configManager.getConfiguration(FriendsMapConfig.GROUP, INTERNAL_TOKEN_KEY);
 		if (internalToken == null)
 		{
 			internalToken = "";
+		}
+
+		if (configManager.getConfiguration(FriendsMapConfig.GROUP, CONSENT_KEY) == null)
+		{
+			SwingUtilities.invokeLater(this::showDataConsentDialog);
 		}
 
 		simulatedProvider = new SimulatedLocationProvider();
@@ -144,6 +180,16 @@ public class FriendsMapPlugin extends Plugin
 	@Subscribe
 	public void onGameTick(GameTick event)
 	{
+		// Hard gate: without granted consent the plugin must not run.
+		if (!consentGranted)
+		{
+			if (!consentPending)
+			{
+				pluginManager.setPluginEnabled(this, false);
+			}
+			return;
+		}
+
 		// Single source of truth for simulation pacing.
 		if (simulationActive())
 		{
@@ -201,6 +247,33 @@ public class FriendsMapPlugin extends Plugin
 			return;
 		}
 
+		if ("sendLocationWilderness".equals(event.getKey()) && "true".equals(event.getNewValue()))
+		{
+			SwingUtilities.invokeLater(() ->
+			{
+				int result = JOptionPane.showConfirmDialog(null,
+					"Are you really sure you want to send your wilderness location?",
+					"Friends Map", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+				if (result != JOptionPane.YES_OPTION)
+				{
+					configManager.setConfiguration(FriendsMapConfig.GROUP, "sendLocationWilderness", false);
+				}
+			});
+		}
+		else if ("sendLocationPvpWorlds".equals(event.getKey()) && "true".equals(event.getNewValue()))
+		{
+			SwingUtilities.invokeLater(() ->
+			{
+				int result = JOptionPane.showConfirmDialog(null,
+					"Are you really sure you want to send your location on PvP worlds?",
+					"Friends Map", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+				if (result != JOptionPane.YES_OPTION)
+				{
+					configManager.setConfiguration(FriendsMapConfig.GROUP, "sendLocationPvpWorlds", false);
+				}
+			});
+		}
+
 		// Display changes (colors, size, toggles) apply immediately.
 		mapPointService.synchronize(currentFriends, config.showOnWorldMap());
 
@@ -244,8 +317,7 @@ public class FriendsMapPlugin extends Plugin
 	private void publish(List<FriendLocation> friends)
 	{
 		currentFriends.clear();
-		int max = config.maxTrackedFriends();
-		currentFriends.addAll(friends.size() > max ? friends.subList(0, max) : friends);
+		currentFriends.addAll(friends);
 		mapPointService.synchronize(currentFriends, config.showOnWorldMap());
 	}
 
@@ -346,6 +418,14 @@ public class FriendsMapPlugin extends Plugin
 		payload.toggles.visibleToFriends = config.visibilityFriends();
 		payload.toggles.visibleToFriendsChat = config.visibilityFriendsChat();
 		payload.toggles.showAlways = false;
+
+		// Keep heartbeats flowing so we still receive friends, but never share
+		// our own position from wilderness/PvP unless explicitly enabled.
+		if (!canSendLocation())
+		{
+			payload.position = null;
+			logNet("location hidden: wilderness/PvP toggle off");
+		}
 
 		String token = internalToken;
 		livePollInFlight = true;
@@ -454,6 +534,31 @@ public class FriendsMapPlugin extends Plugin
 		}
 	}
 
+	/** One-time consent shown on first enable. Decline disables the plugin. */
+	private void showDataConsentDialog()
+	{
+		try
+		{
+			int result = JOptionPane.showConfirmDialog(null,
+				"This plugin submits your RSN, player location and friends/clan data to a server not controlled or verified by the RuneLite developers.\n\nDo you want to continue?",
+				"Friends Map", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+			if (result == JOptionPane.YES_OPTION)
+			{
+				configManager.setConfiguration(FriendsMapConfig.GROUP, CONSENT_KEY, "true");
+				consentGranted = true;
+			}
+			else
+			{
+				configManager.setConfiguration(FriendsMapConfig.GROUP, CONSENT_KEY, "false");
+				pluginManager.setPluginEnabled(this, false);
+			}
+		}
+		finally
+		{
+			consentPending = false;
+		}
+	}
+
 	private static List<String> toNames(List<RosterEntry> entries)
 	{
 		List<String> names = new ArrayList<>(entries.size());
@@ -499,6 +604,19 @@ public class FriendsMapPlugin extends Plugin
 			return Relation.FRIENDS_CHAT;
 		}
 		return Relation.FRIEND;
+	}
+
+	private boolean canSendLocation()
+	{
+		if (!config.sendLocationWilderness() && client.getVarbitValue(VarbitID.INSIDE_WILDERNESS) == 1)
+		{
+			return false;
+		}
+		if (!config.sendLocationPvpWorlds() && WorldType.isPvpWorld(client.getWorldType()))
+		{
+			return false;
+		}
+		return true;
 	}
 
 	private static final class OfflineHold

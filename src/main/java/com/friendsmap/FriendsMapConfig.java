@@ -76,19 +76,6 @@ public interface FriendsMapConfig extends Config
 	}
 
 	@ConfigItem(
-		keyName = "maxTrackedFriends",
-		name = "Max tracked friends",
-		description = "Upper bound on friends rendered and sent to the backend. Prevents huge rosters from flooding the map and network.",
-		section = displaySection,
-		position = 2
-	)
-	@Range(min = 10, max = 500)
-	default int maxTrackedFriends()
-	{
-		return 200;
-	}
-
-	@ConfigItem(
 		keyName = "visibilityClan",
 		name = "Visible to clan",
 		description = "Share your location with members of the same clan channel.",
@@ -122,6 +109,30 @@ public interface FriendsMapConfig extends Config
 	default boolean visibilityFriendsChat()
 	{
 		return true;
+	}
+
+	@ConfigItem(
+		keyName = "sendLocationWilderness",
+		name = "Send location in Wilderness",
+		description = "Send your location while inside the Wilderness. When off, heartbeats continue (you still see friends) but your position is never shared from the Wilderness.",
+		section = visibilitySection,
+		position = 3
+	)
+	default boolean sendLocationWilderness()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "sendLocationPvpWorlds",
+		name = "Send location on PvP worlds",
+		description = "Send your location while on PvP worlds. When off, heartbeats continue (you still see friends) but your position is never shared from PvP worlds.",
+		section = visibilitySection,
+		position = 4
+	)
+	default boolean sendLocationPvpWorlds()
+	{
+		return false;
 	}
 
 	@ConfigItem(

@@ -5,6 +5,7 @@
 package com.friendsmap.services;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -27,7 +28,7 @@ public class FriendsMapClient
 	public static final String BASE_URL = "https://map.mss54.com";
 
 	private final HttpClient httpClient;
-	private final Gson gson = new Gson();
+	private final Gson gson = new GsonBuilder().serializeNulls().create();
 
 	public FriendsMapClient()
 	{
