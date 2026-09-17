@@ -39,10 +39,11 @@ purple = friends chat) with the name in small text next to it.
 
 ## Privacy
 
-- The plugin declares a `warning` in its plugin properties: it submits your IP
-  address, RSN, location and friends/clan data to a server not controlled by
-  RuneLite. Users accept these terms in the plugin hub before installing and
-  running the plugin. No in-game consent dialog is shown.
+- No in-game consent dialog is shown. Instead the plugin declares a `warning` in
+  its **plugin-hub commit descriptor** (`runelite/plugin-hub/plugins/friends-map`),
+  which the Plugin Hub displays to users before they install and run the plugin:
+  it submits your IP address, RSN, location and friends/clan data to a server not
+  controlled by RuneLite.
 - Wilderness / PvP worlds: location toggles default off. When off, heartbeats
   continue (you still see friends) but your position is sent as `null` and never
   shared.
