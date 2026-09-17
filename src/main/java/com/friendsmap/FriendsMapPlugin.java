@@ -32,7 +32,6 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
-import net.runelite.client.plugins.PluginManager;
 import net.runelite.client.ui.overlay.OverlayManager;
 import com.friendsmap.model.FriendLocation;
 import com.friendsmap.model.HeartbeatPayload;
@@ -61,7 +60,6 @@ public class FriendsMapPlugin extends Plugin
 {
 	private static final String LOG_CATEGORY = "friendsmap";
 	private static final String INTERNAL_TOKEN_KEY = "internalToken";
-	private static final String CONSENT_KEY = "dataConsentShown";
 	private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm:ss");
 
 	/** Poll every 4 game ticks (~2 seconds). Locked. */
@@ -86,9 +84,6 @@ public class FriendsMapPlugin extends Plugin
 	private Injector injector;
 
 	@Inject
-	private PluginManager pluginManager;
-
-	@Inject
 	private ScheduledExecutorService executor;
 
 	/** Snapshot of visible friends. Single source of truth for all renderers. */
@@ -111,8 +106,6 @@ public class FriendsMapPlugin extends Plugin
 	private volatile String lastResponseLog = "-";
 	private String modeLabel = "LIVE";
 	private String internalToken = "";
-	private volatile boolean consentGranted;
-	private volatile boolean consentPending;
 
 	/** Offline friends: keep last known position, faded, for OFFLINE_HOLD. Client thread only. */
 	private final Map<String, OfflineHold> offlineHolds = new HashMap<>();
@@ -126,35 +119,10 @@ public class FriendsMapPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-		consentGranted = false;
-		consentPending = false;
-
-		String consent = configManager.getConfiguration(FriendsMapConfig.GROUP, CONSENT_KEY);
-		if ("true".equals(consent))
-		{
-			consentGranted = true;
-		}
-		else if ("false".equals(consent))
-		{
-			// Previously denied: stay disabled.
-			pluginManager.setPluginEnabled(this, false);
-			return;
-		}
-		else
-		{
-			consentPending = true;
-			SwingUtilities.invokeLater(this::showDataConsentDialog);
-		}
-
 		internalToken = configManager.getConfiguration(FriendsMapConfig.GROUP, INTERNAL_TOKEN_KEY);
 		if (internalToken == null)
 		{
 			internalToken = "";
-		}
-
-		if (configManager.getConfiguration(FriendsMapConfig.GROUP, CONSENT_KEY) == null)
-		{
-			SwingUtilities.invokeLater(this::showDataConsentDialog);
 		}
 
 		simulatedProvider = new SimulatedLocationProvider();
@@ -180,16 +148,6 @@ public class FriendsMapPlugin extends Plugin
 	@Subscribe
 	public void onGameTick(GameTick event)
 	{
-		// Hard gate: without granted consent the plugin must not run.
-		if (!consentGranted)
-		{
-			if (!consentPending)
-			{
-				pluginManager.setPluginEnabled(this, false);
-			}
-			return;
-		}
-
 		// Single source of truth for simulation pacing.
 		if (simulationActive())
 		{
@@ -531,31 +489,6 @@ public class FriendsMapPlugin extends Plugin
 		if (config.debug())
 		{
 			log.debug("{}: {}", LOG_CATEGORY + "/net", message);
-		}
-	}
-
-	/** One-time consent shown on first enable. Decline disables the plugin. */
-	private void showDataConsentDialog()
-	{
-		try
-		{
-			int result = JOptionPane.showConfirmDialog(null,
-				"This plugin submits your RSN, player location and friends/clan data to a server not controlled or verified by the RuneLite developers.\n\nDo you want to continue?",
-				"Friends Map", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-			if (result == JOptionPane.YES_OPTION)
-			{
-				configManager.setConfiguration(FriendsMapConfig.GROUP, CONSENT_KEY, "true");
-				consentGranted = true;
-			}
-			else
-			{
-				configManager.setConfiguration(FriendsMapConfig.GROUP, CONSENT_KEY, "false");
-				pluginManager.setPluginEnabled(this, false);
-			}
-		}
-		finally
-		{
-			consentPending = false;
 		}
 	}
 
