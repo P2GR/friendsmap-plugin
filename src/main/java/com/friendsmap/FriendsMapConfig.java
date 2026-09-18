@@ -211,7 +211,7 @@ public interface FriendsMapConfig extends Config
 	@ConfigItem(
 		keyName = "debug",
 		name = "Debug overlay",
-		description = "Show rosters (friends, clan, friends chat), incoming backend data and displayed friend data in an overlay.",
+		description = "Show the server connection state and the friends currently displayed, grouped by relation, in an overlay.",
 		section = advancedSection,
 		position = 0
 	)

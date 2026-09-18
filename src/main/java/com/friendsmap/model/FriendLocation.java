@@ -62,9 +62,4 @@ public final class FriendLocation
 	{
 		return location != null && location.getPlane() == 0;
 	}
-
-	public int getRegionId()
-	{
-		return location == null ? -1 : location.getRegionID();
-	}
 }

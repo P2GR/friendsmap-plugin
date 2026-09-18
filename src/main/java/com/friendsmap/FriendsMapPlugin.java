@@ -8,8 +8,6 @@ import com.google.inject.Injector;
 import com.google.inject.Provides;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -60,7 +58,6 @@ public class FriendsMapPlugin extends Plugin
 {
 	private static final String LOG_CATEGORY = "friendsmap";
 	private static final String INTERNAL_TOKEN_KEY = "internalToken";
-	private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm:ss");
 
 	/** Poll every 4 game ticks (~2 seconds). Locked. */
 	private static final int POLL_TICKS = 4;
@@ -100,10 +97,6 @@ public class FriendsMapPlugin extends Plugin
 	private volatile boolean livePollInFlight;
 	private volatile boolean liveResultReady;
 	private volatile List<FriendLocation> pendingLiveFriends = Collections.emptyList();
-	private volatile String lastHealthStatus = "-";
-	private volatile String lastHealthBody = "-";
-	private volatile String lastRequestLog = "-";
-	private volatile String lastResponseLog = "-";
 	private String modeLabel = "LIVE";
 	private String internalToken = "";
 
@@ -251,26 +244,6 @@ public class FriendsMapPlugin extends Plugin
 		return modeLabel;
 	}
 
-	public String getLastHealthStatus()
-	{
-		return lastHealthStatus;
-	}
-
-	public String getLastHealthBody()
-	{
-		return lastHealthBody;
-	}
-
-	public String getLastRequestLog()
-	{
-		return lastRequestLog;
-	}
-
-	public String getLastResponseLog()
-	{
-		return lastResponseLog;
-	}
-
 	/** Push a new snapshot through every renderer. */
 	private void publish(List<FriendLocation> friends)
 	{
@@ -318,11 +291,6 @@ public class FriendsMapPlugin extends Plugin
 			display.add(hold.location);
 		}
 		publish(display);
-	}
-
-	private int pollTicks()
-	{
-		return POLL_TICKS;
 	}
 
 	/** True when simulated data is the active display source this tick. */
@@ -390,16 +358,13 @@ public class FriendsMapPlugin extends Plugin
 
 		executor.submit(() ->
 		{
-			String timestamp = LocalTime.now().format(TIME_FORMAT);
 			String sessionToken = token;
 			try
 			{
 				if (sessionToken == null || sessionToken.isEmpty())
 				{
-					lastRequestLog = timestamp + " | POST " + FriendsMapClient.BASE_URL + "/api/v1/register {username:" + username + ",world:" + world + "}";
 					logNet("request sent: POST /api/v1/register");
 					sessionToken = friendsMapClient.register(username, world);
-					lastResponseLog = timestamp + " | register -> token " + (sessionToken == null ? "FAILED" : "received");
 					logNet("register response: token " + (sessionToken == null ? "FAILED" : "received"));
 					if (sessionToken == null)
 					{
@@ -410,11 +375,8 @@ public class FriendsMapPlugin extends Plugin
 					configManager.setConfiguration(FriendsMapConfig.GROUP, INTERNAL_TOKEN_KEY, sessionToken);
 				}
 
-				lastRequestLog = timestamp + " | POST " + FriendsMapClient.BASE_URL + "/api/v1/heartbeat (friends:" + payload.friends.size()
-					+ ", clan:" + payload.clan + ", fc:" + payload.friendsChat + ")";
 				logNet("request sent: POST /api/v1/heartbeat");
 				HeartbeatResult result = friendsMapClient.heartbeat(payload, sessionToken);
-				lastResponseLog = timestamp + " | HTTP " + result.getStatusCode() + " | " + result.getRawBody();
 				logNet("heartbeat response: HTTP " + result.getStatusCode() + " " + result.getRawBody());
 
 				if (result.isSuccess())
@@ -436,7 +398,6 @@ public class FriendsMapPlugin extends Plugin
 			catch (Exception e)
 			{
 				backendOnline = false;
-				lastResponseLog = timestamp + " | ERROR | " + e.getMessage();
 				log.warn("{}: live poll failed", LOG_CATEGORY, e);
 			}
 			finally
@@ -456,25 +417,16 @@ public class FriendsMapPlugin extends Plugin
 		healthCheckInFlight = true;
 		executor.submit(() ->
 		{
-			String timestamp = LocalTime.now().format(TIME_FORMAT);
-			String requestLine = "GET " + FriendsMapClient.BASE_URL + "/api/v1/health";
-			lastRequestLog = timestamp + " | " + requestLine;
 			logNet("request sent: GET /api/v1/health");
 			try
 			{
 				HealthProbe probe = friendsMapClient.probe();
 				backendOnline = probe.isReachable();
-				lastHealthStatus = probe.isReachable() ? "reachable (200)" : "unreachable (" + probe.getStatusCode() + ")";
-				lastHealthBody = probe.getBody();
-				lastResponseLog = timestamp + " | HTTP " + probe.getStatusCode() + " | " + probe.getBody();
 				logNet("health response: HTTP " + probe.getStatusCode() + " " + probe.getBody());
 			}
 			catch (Exception e)
 			{
 				backendOnline = false;
-				lastHealthStatus = "error";
-				lastHealthBody = e.getMessage();
-				lastResponseLog = timestamp + " | ERROR | " + e.getMessage();
 				log.warn("{}: health check failed", LOG_CATEGORY, e);
 			}
 			finally

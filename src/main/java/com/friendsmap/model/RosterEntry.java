@@ -5,26 +5,20 @@
 package com.friendsmap.model;
 
 /**
- * One roster member: display name + world.
+ * One roster member: display name only. World is deliberately not carried —
+ * the backend matches members by name and resolves presence itself.
  */
 public final class RosterEntry
 {
 	private final String name;
-	private final int world;
 
-	public RosterEntry(String name, int world)
+	public RosterEntry(String name)
 	{
 		this.name = name;
-		this.world = world;
 	}
 
 	public String getName()
 	{
 		return name;
-	}
-
-	public int getWorld()
-	{
-		return world;
 	}
 }
