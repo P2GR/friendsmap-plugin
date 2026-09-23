@@ -64,4 +64,16 @@ public class AreaLookupTest
 		assertEquals("Vorkath's arena", lookup.nameFor(new WorldPoint(2269, 4062, 0)));
 		assertEquals("Ungael laboratory", lookup.nameFor(new WorldPoint(2275, 10470, 0)));
 	}
+
+	@Test
+	public void findsPlayerOwnedHouseOnEveryPlane()
+	{
+		// Every house (owner or guest) is assembled in one virtual block: map
+		// regions 7513/7514/7769/7770/8025/8026 (x 1856-2047, y 5696-5823).
+		assertEquals("Player-owned house", lookup.nameFor(new WorldPoint(1900, 5750, 0)));
+		assertEquals("Player-owned house", lookup.nameFor(new WorldPoint(2000, 5800, 1)));
+		assertEquals("Player-owned house", lookup.nameFor(new WorldPoint(1856, 5696, 2)));
+		assertEquals("Player-owned house", lookup.nameFor(new WorldPoint(2047, 5823, 3)));
+		assertNull(lookup.nameFor(new WorldPoint(1855, 5695, 0)));
+	}
 }

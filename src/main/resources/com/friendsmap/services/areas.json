@@ -3346,5 +3346,45 @@
       "height": 64,
       "plane": 0
     }
+  },
+  {
+    "name": "Player-owned house",
+    "area": {
+      "x": 1856,
+      "y": 5696,
+      "width": 192,
+      "height": 128,
+      "plane": 0
+    }
+  },
+  {
+    "name": "Player-owned house",
+    "area": {
+      "x": 1856,
+      "y": 5696,
+      "width": 192,
+      "height": 128,
+      "plane": 1
+    }
+  },
+  {
+    "name": "Player-owned house",
+    "area": {
+      "x": 1856,
+      "y": 5696,
+      "width": 192,
+      "height": 128,
+      "plane": 2
+    }
+  },
+  {
+    "name": "Player-owned house",
+    "area": {
+      "x": 1856,
+      "y": 5696,
+      "width": 192,
+      "height": 128,
+      "plane": 3
+    }
   }
 ]
