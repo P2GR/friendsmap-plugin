@@ -20,6 +20,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.swing.SwingUtilities;
 import net.runelite.api.Client;
+import net.runelite.api.Point;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.gameval.InterfaceID;
 import net.runelite.api.widgets.Widget;
@@ -192,8 +193,10 @@ public class FriendsMapPlayerListOverlay extends Overlay implements MouseListene
 	@Override
 	public MouseWheelEvent mouseWheelMoved(MouseWheelEvent event)
 	{
+		// Only scroll the list while the pointer hovers the panel; everywhere
+		// else the wheel is left alone so the world map keeps zooming.
 		if (!config.showPlayerList() || worldMapBounds() == null || maxScrollRows <= 0
-			|| !listBounds.contains(event.getPoint()))
+			|| !pointerIn(listBounds))
 		{
 			return event;
 		}
@@ -210,14 +213,14 @@ public class FriendsMapPlayerListOverlay extends Overlay implements MouseListene
 		if (!SwingUtilities.isLeftMouseButton(event)
 			|| !config.showPlayerList()
 			|| worldMapBounds() == null
-			|| !listBounds.contains(event.getPoint()))
+			|| !pointerIn(listBounds))
 		{
 			return event;
 		}
 
 		for (RowHit hit : rowHits)
 		{
-			if (hit.target != null && hit.bounds.contains(event.getPoint()))
+			if (hit.target != null && pointerIn(hit.bounds))
 			{
 				// Same effect as the world map's "Focus on" menu entry.
 				client.getWorldMap().setWorldMapPositionTarget(hit.target);
@@ -262,6 +265,20 @@ public class FriendsMapPlayerListOverlay extends Overlay implements MouseListene
 	public MouseEvent mouseMoved(MouseEvent event)
 	{
 		return event;
+	}
+
+	/**
+	 * True when the pointer is inside the given rectangle. Uses the client's
+	 * mouse position converted to widget space with the viewport offsets (the
+	 * same conversion core's ClientUI uses), so hover tests match where the
+	 * panel is actually drawn on any fixed, resizable or scaled client.
+	 */
+	private boolean pointerIn(Rectangle rect)
+	{
+		Point mouse = client.getMouseCanvasPosition();
+		return mouse != null && rect.contains(
+			mouse.getX() + client.getViewportXOffset(),
+			mouse.getY() + client.getViewportYOffset());
 	}
 
 	/** Bounds of the world map view while the world map is open, else null. */
