@@ -37,6 +37,7 @@ import com.friendsmap.FriendsMapPlugin;
 import com.friendsmap.PlayerListFilter;
 import com.friendsmap.model.FriendLocation;
 import com.friendsmap.model.Relation;
+import com.friendsmap.services.AreaLookup;
 import com.friendsmap.util.FriendIconFactory;
 
 /**
@@ -66,6 +67,7 @@ public class FriendsMapPlayerListOverlay extends Overlay implements MouseListene
 	private final Client client;
 	private final FriendsMapConfig config;
 	private final FriendsMapPlugin plugin;
+	private final AreaLookup areaLookup;
 
 	private final PanelComponent panelComponent = new PanelComponent();
 
@@ -80,11 +82,12 @@ public class FriendsMapPlayerListOverlay extends Overlay implements MouseListene
 	private volatile List<RowHit> rowHits = Collections.emptyList();
 
 	@Inject
-	public FriendsMapPlayerListOverlay(Client client, FriendsMapConfig config, FriendsMapPlugin plugin)
+	public FriendsMapPlayerListOverlay(Client client, FriendsMapConfig config, FriendsMapPlugin plugin, AreaLookup areaLookup)
 	{
 		this.client = client;
 		this.config = config;
 		this.plugin = plugin;
+		this.areaLookup = areaLookup;
 		setPosition(OverlayPosition.DYNAMIC);
 		setPriority(PRIORITY_HIGHEST);
 		setLayer(OverlayLayer.MANUAL);
@@ -145,7 +148,9 @@ public class FriendsMapPlayerListOverlay extends Overlay implements MouseListene
 			}
 
 			FriendLocation friend = line.friend;
-			String label = friend.getName() + " - " + friend.getWorldLabel();
+			String area = config.showAreaNames() ? areaLookup.nameFor(friend.getLocation()) : null;
+			String label = friend.getName() + " - " + friend.getWorldLabel()
+				+ (area == null ? "" : " - " + area);
 			textWidth = Math.max(textWidth, rowMetrics.stringWidth(label));
 			LineComponent row = LineComponent.builder()
 				.left(label)

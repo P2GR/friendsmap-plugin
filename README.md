@@ -19,8 +19,10 @@ map's top-left corner; click an entry to focus the map on that player.
 
 The world map shows a scrollable list of the visible players in its top-left
 corner. Rows read `Playername - W366`; left-click a row to focus the map on
-that player, same as the map's "Focus on" option. With the `Player list
-filter` set to Show All the list is grouped by relation:
+that player, same as the map's "Focus on" option. When the player is in a known
+area (boss lair, dungeon, minigame) the name is appended:
+`Zeep - W466 - Callisto's Den`. With the `Player list filter` set to Show All
+the list is grouped by relation:
 
     Friends (1)
     Zeep - W366
@@ -46,6 +48,8 @@ the heartbeat data — it adds no network traffic.
   empty sections hidden (default Show All)
 - `playerListRows` — rows shown before the list scrolls (3–25)
 - `playerListFontSize` — list text size (10–24)
+- `showAreaNames` — area names in the list and tooltips, e.g.
+  `Zeep - W466 - Callisto's Den` (default on)
 - `dotColorFriend` / `dotColorClan` / `dotColorFriendsChat` — dot colors
 - `dotSize` — dot diameter (4–24)
 
@@ -58,7 +62,9 @@ the heartbeat data — it adds no network traffic.
 
 **Advanced**
 - `debug` — minimal overlay: server connection (Live/Offline) and
-  displayed friends grouped by relation
+  displayed friends grouped by relation. Also shows your own
+  `x,y,plane rN [Area]` location (plus the raw instance copy when instanced) —
+  use it to author new entries for the bundled area list.
 
 ## Privacy
 
@@ -84,3 +90,10 @@ the heartbeat data — it adds no network traffic.
 
 - `./gradlew build` — compile and package the plugin jar.
 - `./gradlew run` — start the RuneLite dev client with the plugin loaded.
+- `./gradlew test` — unit tests, including the area list matching.
+- **Areas** live in `src/main/resources/com/friendsmap/services/areas.json`
+  (x/y/width/height/plane boxes, vendored from Tibo De Munck's
+  runelite-live-friend-locations-plugin, BSD-2-Clause — see `areas-LICENSE.txt`
+  beside it). To add one, stand in the area with `debug` on and turn the
+  `You: x,y,plane rN [Area]` line into a new entry; the smallest matching box
+  wins.

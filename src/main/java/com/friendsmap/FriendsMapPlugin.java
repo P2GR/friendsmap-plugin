@@ -47,6 +47,7 @@ import com.friendsmap.services.FriendDataCollector;
 import com.friendsmap.services.FriendsMapClient;
 import com.friendsmap.services.FriendsMapClient.HeartbeatResult;
 import com.friendsmap.services.MapPointService;
+import com.friendsmap.util.WorldPoints;
 
 @Slf4j
 @PluginDescriptor(
@@ -280,11 +281,12 @@ public class FriendsMapPlugin extends Plugin
 		{
 			return;
 		}
-		WorldPoint location = localPlayer.getWorldLocation();
+		WorldPoint location = WorldPoints.realLocation(client, localPlayer);
 		if (location == null)
 		{
 			return;
 		}
+		boolean inInstance = WorldPoints.inInstance(client, localPlayer);
 
 		String username = localPlayer.getName();
 		int world = client.getWorld();
@@ -298,7 +300,7 @@ public class FriendsMapPlugin extends Plugin
 		payload.position.y = location.getY();
 		payload.position.plane = location.getPlane();
 		payload.position.regionId = location.getRegionID();
-		payload.instance = false;
+		payload.instance = inInstance;
 		payload.clan = roster.getClanName();
 		payload.friendsChat = roster.getFriendsChatName();
 		payload.friends = toNames(roster.getFriends());

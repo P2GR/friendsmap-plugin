@@ -131,6 +131,18 @@ public interface FriendsMapConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "showAreaNames",
+		name = "Show area names",
+		description = "Show the named area (for example Callisto's Den) in the player list and map tooltips, from the bundled area list.",
+		section = displaySection,
+		position = 7
+	)
+	default boolean showAreaNames()
+	{
+		return true;
+	}
+
+	@ConfigItem(
 		keyName = "visibilityClan",
 		name = "Visible to clan",
 		description = "Share your location with members of the same clan channel.",

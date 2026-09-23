@@ -30,14 +30,16 @@ public class MapPointService
 {
 	private final WorldMapPointManager worldMapPointManager;
 	private final FriendsMapConfig config;
+	private final AreaLookup areaLookup;
 	private final Map<String, WorldMapPoint> pointsByName = new HashMap<>();
 	private final Map<String, Integer> worldsByName = new HashMap<>();
 
 	@Inject
-	public MapPointService(WorldMapPointManager worldMapPointManager, FriendsMapConfig config)
+	public MapPointService(WorldMapPointManager worldMapPointManager, FriendsMapConfig config, AreaLookup areaLookup)
 	{
 		this.worldMapPointManager = worldMapPointManager;
 		this.config = config;
+		this.areaLookup = areaLookup;
 	}
 
 	/**
@@ -131,8 +133,10 @@ public class MapPointService
 		String header = friend.getWorld() == 0
 			? friend.getName() + " (offline)"
 			: friend.getName() + " (World " + friend.getWorld() + ")";
+		String area = config.showAreaNames() ? areaLookup.nameFor(friend.getLocation()) : null;
 		return header
 			+ "<br>" + friend.getRelation().getLabel()
+			+ (area == null ? "" : "<br>" + area)
 			+ "<br>" + ageSeconds + "s ago";
 	}
 }
