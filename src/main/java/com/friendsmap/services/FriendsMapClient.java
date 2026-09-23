@@ -63,24 +63,6 @@ public class FriendsMapClient
 		}
 	}
 
-	/** Probe the backend health endpoint. Never throws. */
-	public HealthProbe probe()
-	{
-		Request request = new Request.Builder()
-			.url(BASE_URL + "/api/v1/health")
-			.get()
-			.build();
-
-		try (Response response = httpClient.newCall(request).execute())
-		{
-			return new HealthProbe(response.code() == 200, response.code(), bodyString(response));
-		}
-		catch (Exception e)
-		{
-			return new HealthProbe(false, -1, e.getMessage());
-		}
-	}
-
 	/**
 	 * Register (idempotent server-side) and return the backend-issued token.
 	 * Returns null on any failure.
@@ -162,35 +144,6 @@ public class FriendsMapClient
 	{
 		private String accountId;
 		private String token;
-	}
-
-	public static final class HealthProbe
-	{
-		private final boolean reachable;
-		private final int statusCode;
-		private final String body;
-
-		private HealthProbe(boolean reachable, int statusCode, String body)
-		{
-			this.reachable = reachable;
-			this.statusCode = statusCode;
-			this.body = body;
-		}
-
-		public boolean isReachable()
-		{
-			return reachable;
-		}
-
-		public int getStatusCode()
-		{
-			return statusCode;
-		}
-
-		public String getBody()
-		{
-			return body;
-		}
 	}
 
 	public static final class HeartbeatResult

@@ -38,6 +38,12 @@ public final class FriendLocation
 		return world;
 	}
 
+	/** World as shown to the user, e.g. {@code W366}; offline holds read {@code offline}. */
+	public String getWorldLabel()
+	{
+		return world == 0 ? "offline" : "W" + world;
+	}
+
 	public WorldPoint getLocation()
 	{
 		return location;

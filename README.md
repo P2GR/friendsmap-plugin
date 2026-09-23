@@ -2,7 +2,9 @@
 
 Shows friends, clan members and friends-chat members as live icons on the OSRS
 world map. Each icon is a colored dot (green = friend, orange = clan,
-purple = friends chat) with the name in small text next to it.
+purple = friends chat) with the name in small text next to it. A scrollable
+list of the visible players (name and current world) is pinned to the world
+map's top-left corner; click an entry to focus the map on that player.
 
 ## How it works
 
@@ -13,11 +15,37 @@ purple = friends chat) with the name in small text next to it.
   response.
 - Auth token is managed internally (auto-register), no user-facing API key.
 
+## Player list
+
+The world map shows a scrollable list of the visible players in its top-left
+corner. Rows read `Playername - W366`; left-click a row to focus the map on
+that player, same as the map's "Focus on" option. With the `Player list
+filter` set to Show All the list is grouped by relation:
+
+    Friends (1)
+    Zeep - W366
+
+    Clan (2)
+    P2GR - W466
+    MCP - W353
+
+Players on your world are listed first, then alphabetically. Sections with
+nobody in them (for example Friends Chat) are hidden. The list is built from
+the heartbeat data — it adds no network traffic.
+
 ## Config
 
 **Display**
 - `showOnWorldMap` — draw world map icons (default on)
 - `showWorldMapNames` — name in small text next to each dot (default on)
+- `showWorldMapWorld` — world in map labels, e.g. `Playername - W366` (default on)
+- `showPlayerList` — scrollable player list in the world map's top-left corner
+  (default on); rows read `Playername - W366`, players on your world first
+- `playerListFilter` — Show All / Show Clan / Show Friends / Show Friends Chat;
+  Show All groups under `Friends (n)` / `Clan (n)` / `Friends Chat (n)` headers,
+  empty sections hidden (default Show All)
+- `playerListRows` — rows shown before the list scrolls (3–25)
+- `playerListFontSize` — list text size (10–24)
 - `dotColorFriend` / `dotColorClan` / `dotColorFriendsChat` — dot colors
 - `dotSize` — dot diameter (4–24)
 
@@ -28,13 +56,8 @@ purple = friends chat) with the name in small text next to it.
 - `sendLocationPvpWorlds` — share position on PvP worlds (default off,
   confirmed with a warning dialog when enabled)
 
-**Simulation**
-- `simulateFriends` — fake friends, zero network (development)
-- `simulateWhenOffline` — automatically fall back to simulated friends when the
-  backend is unreachable (default on)
-
 **Advanced**
-- `debug` — minimal overlay: server connection (Live/Offline/Simulated) and
+- `debug` — minimal overlay: server connection (Live/Offline) and
   displayed friends grouped by relation
 
 ## Privacy
@@ -56,3 +79,8 @@ purple = friends chat) with the name in small text next to it.
 - World map only shows the surface plane; caves/instances are not rendered.
 - Minimap friend dots are rendered by the game itself; the plugin adds nothing
   there.
+
+## Development
+
+- `./gradlew build` — compile and package the plugin jar.
+- `./gradlew run` — start the RuneLite dev client with the plugin loaded.

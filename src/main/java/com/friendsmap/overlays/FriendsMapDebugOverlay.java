@@ -90,16 +90,7 @@ public class FriendsMapDebugOverlay extends Overlay
 
 	private String serverStatus()
 	{
-		String mode = plugin.getModeLabel();
-		if (mode.contains("offline"))
-		{
-			return "Offline";
-		}
-		if (mode.contains("SIMULATED"))
-		{
-			return "Simulated";
-		}
-		return "Live";
+		return plugin.isBackendOnline() ? "Live" : "Offline";
 	}
 
 	private void addSection(String title, List<FriendLocation> friends)

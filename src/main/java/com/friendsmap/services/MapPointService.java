@@ -70,7 +70,7 @@ public class MapPointService
 				worldMapPointManager.remove(existing);
 			}
 
-			String displayName = config.showWorldMapNames() ? friend.getName() : null;
+			String displayName = mapLabel(friend);
 			WorldMapPoint point = new WorldMapPoint(friend.getLocation(), FriendIconFactory.worldMapDot(friend.getRelation(), config, displayName, friend.getWorld() == 0));
 			if (displayName != null)
 			{
@@ -107,6 +107,22 @@ public class MapPointService
 		}
 		pointsByName.clear();
 		worldsByName.clear();
+	}
+
+	/** Dot label: name and/or world per config; null = dot only. */
+	private String mapLabel(FriendLocation friend)
+	{
+		boolean name = config.showWorldMapNames();
+		boolean world = config.showWorldMapWorld();
+		if (name && world)
+		{
+			return friend.getName() + " - " + friend.getWorldLabel();
+		}
+		if (name)
+		{
+			return friend.getName();
+		}
+		return world ? friend.getWorldLabel() : null;
 	}
 
 	private String buildTooltip(FriendLocation friend)

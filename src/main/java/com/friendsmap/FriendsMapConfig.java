@@ -38,16 +38,9 @@ public interface FriendsMapConfig extends Config
 	String colorsSection = "colors";
 
 	@ConfigSection(
-		name = "Simulation",
-		description = "Fake friends for development without a backend",
-		position = 3
-	)
-	String simulationSection = "simulation";
-
-	@ConfigSection(
 		name = "Advanced",
 		description = "Debugging and polling",
-		position = 4
+		position = 3
 	)
 	String advancedSection = "advanced";
 
@@ -73,6 +66,68 @@ public interface FriendsMapConfig extends Config
 	default boolean showWorldMapNames()
 	{
 		return true;
+	}
+
+	@ConfigItem(
+		keyName = "showWorldMapWorld",
+		name = "Show world on map",
+		description = "Show the player's current world in their map label (for example Playername - W366).",
+		section = displaySection,
+		position = 2
+	)
+	default boolean showWorldMapWorld()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "showPlayerList",
+		name = "Show player list",
+		description = "Show a scrollable list of the players currently visible, in the top-left corner of the world map.",
+		section = displaySection,
+		position = 3
+	)
+	default boolean showPlayerList()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "playerListFilter",
+		name = "Player list filter",
+		description = "Which players the world map list shows. Show All groups the list under Friends, Clan and Friends Chat headers.",
+		section = displaySection,
+		position = 4
+	)
+	default PlayerListFilter playerListFilter()
+	{
+		return PlayerListFilter.SHOW_ALL;
+	}
+
+	@ConfigItem(
+		keyName = "playerListRows",
+		name = "Player list height",
+		description = "How many rows the world map list shows at once. Longer lists scroll with the mouse wheel.",
+		section = displaySection,
+		position = 5
+	)
+	@Range(min = 3, max = 25)
+	default int playerListRows()
+	{
+		return 8;
+	}
+
+	@ConfigItem(
+		keyName = "playerListFontSize",
+		name = "Player list text size",
+		description = "Text size of the player names in the world map list.",
+		section = displaySection,
+		position = 6
+	)
+	@Range(min = 10, max = 24)
+	default int playerListFontSize()
+	{
+		return 16;
 	}
 
 	@ConfigItem(
@@ -182,30 +237,6 @@ public interface FriendsMapConfig extends Config
 	default int dotSize()
 	{
 		return 8;
-	}
-
-	@ConfigItem(
-		keyName = "simulateFriends",
-		name = "Simulate friends",
-		description = "Always use fake scripted friends. No network traffic. Development only.",
-		section = simulationSection,
-		position = 0
-	)
-	default boolean simulateFriends()
-	{
-		return false;
-	}
-
-	@ConfigItem(
-		keyName = "simulateWhenOffline",
-		name = "Simulate when server offline",
-		description = "When the backend cannot be reached, fall back to simulated friends so map and minimap stay testable.",
-		section = simulationSection,
-		position = 1
-	)
-	default boolean simulateWhenOffline()
-	{
-		return true;
 	}
 
 	@ConfigItem(

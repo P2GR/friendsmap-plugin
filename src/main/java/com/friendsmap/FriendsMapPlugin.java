@@ -28,6 +28,7 @@ import net.runelite.api.gameval.VarbitID;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
+import net.runelite.client.input.MouseManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
@@ -41,12 +42,11 @@ import com.friendsmap.model.RosterSnapshot;
 import com.friendsmap.model.TogglesPayload;
 import com.friendsmap.model.VisibleFriend;
 import com.friendsmap.overlays.FriendsMapDebugOverlay;
+import com.friendsmap.overlays.FriendsMapPlayerListOverlay;
 import com.friendsmap.services.FriendDataCollector;
 import com.friendsmap.services.FriendsMapClient;
-import com.friendsmap.services.FriendsMapClient.HealthProbe;
 import com.friendsmap.services.FriendsMapClient.HeartbeatResult;
 import com.friendsmap.services.MapPointService;
-import com.friendsmap.services.SimulatedLocationProvider;
 
 @Slf4j
 @PluginDescriptor(
@@ -83,21 +83,22 @@ public class FriendsMapPlugin extends Plugin
 	@Inject
 	private ScheduledExecutorService executor;
 
+	@Inject
+	private MouseManager mouseManager;
+
 	/** Snapshot of visible friends. Single source of truth for all renderers. */
 	private final List<FriendLocation> currentFriends = new CopyOnWriteArrayList<>();
 
-	private SimulatedLocationProvider simulatedProvider;
 	private FriendsMapClient friendsMapClient;
 	private FriendDataCollector collector;
 	private MapPointService mapPointService;
 	private FriendsMapDebugOverlay debugOverlay;
+	private FriendsMapPlayerListOverlay playerListOverlay;
 	private int tickCounter;
 	private volatile boolean backendOnline;
-	private volatile boolean healthCheckInFlight;
 	private volatile boolean livePollInFlight;
 	private volatile boolean liveResultReady;
 	private volatile List<FriendLocation> pendingLiveFriends = Collections.emptyList();
-	private String modeLabel = "LIVE";
 	private String internalToken = "";
 
 	/** Offline friends: keep last known position, faded, for OFFLINE_HOLD. Client thread only. */
@@ -118,7 +119,6 @@ public class FriendsMapPlugin extends Plugin
 			internalToken = "";
 		}
 
-		simulatedProvider = new SimulatedLocationProvider();
 		friendsMapClient = injector.getInstance(FriendsMapClient.class);
 		collector = injector.getInstance(FriendDataCollector.class);
 		mapPointService = injector.getInstance(MapPointService.class);
@@ -126,12 +126,20 @@ public class FriendsMapPlugin extends Plugin
 		debugOverlay = injector.getInstance(FriendsMapDebugOverlay.class);
 		overlayManager.add(debugOverlay);
 
-		log.info("FriendsMap started (simulate={})", config.simulateFriends());
+		playerListOverlay = injector.getInstance(FriendsMapPlayerListOverlay.class);
+		overlayManager.add(playerListOverlay);
+		mouseManager.registerMouseListener(playerListOverlay);
+		mouseManager.registerMouseWheelListener(playerListOverlay);
+
+		log.info("FriendsMap started");
 	}
 
 	@Override
 	protected void shutDown()
 	{
+		mouseManager.unregisterMouseListener(playerListOverlay);
+		mouseManager.unregisterMouseWheelListener(playerListOverlay);
+		overlayManager.remove(playerListOverlay);
 		overlayManager.remove(debugOverlay);
 		mapPointService.clear();
 		currentFriends.clear();
@@ -141,52 +149,16 @@ public class FriendsMapPlugin extends Plugin
 	@Subscribe
 	public void onGameTick(GameTick event)
 	{
-		// Single source of truth for simulation pacing.
-		if (simulationActive())
-		{
-			simulatedProvider.advanceTick();
-		}
-
 		if (tickCounter++ % POLL_TICKS != 0)
 		{
 			return;
 		}
 
-		if (config.simulateFriends())
+		maybeSubmitLivePoll();
+		if (liveResultReady)
 		{
-			modeLabel = "SIMULATED (manual)";
-			publish(simulatedProvider.getFriends());
-			return;
-		}
-
-		if (config.simulateWhenOffline())
-		{
-			if (backendOnline)
-			{
-				modeLabel = "LIVE";
-				maybeSubmitLivePoll();
-				if (liveResultReady)
-				{
-					liveResultReady = false;
-					publishLive(pendingLiveFriends);
-				}
-			}
-			else
-			{
-				modeLabel = "SIMULATED (server offline)";
-				maybeSubmitHealthCheck();
-				publish(simulatedProvider.getFriends());
-			}
-		}
-		else
-		{
-			modeLabel = "LIVE";
-			maybeSubmitLivePoll();
-			if (liveResultReady)
-			{
-				liveResultReady = false;
-				publishLive(pendingLiveFriends);
-			}
+			liveResultReady = false;
+			publishLive(pendingLiveFriends);
 		}
 	}
 
@@ -225,13 +197,11 @@ public class FriendsMapPlugin extends Plugin
 			});
 		}
 
-		// Display changes (colors, size, toggles) apply immediately.
+		// Display changes (colors, size, toggles) apply immediately. The
+		// snapshot is cleared so the icons are rebuilt with the new settings
+		// on the next heartbeat.
 		mapPointService.synchronize(currentFriends, config.showOnWorldMap());
-
-		if (!config.simulateFriends() && !config.simulateWhenOffline())
-		{
-			publish(Collections.emptyList());
-		}
+		publish(Collections.emptyList());
 	}
 
 	public List<FriendLocation> getCurrentFriends()
@@ -239,9 +209,9 @@ public class FriendsMapPlugin extends Plugin
 		return currentFriends;
 	}
 
-	public String getModeLabel()
+	public boolean isBackendOnline()
 	{
-		return modeLabel;
+		return backendOnline;
 	}
 
 	/** Push a new snapshot through every renderer. */
@@ -291,13 +261,6 @@ public class FriendsMapPlugin extends Plugin
 			display.add(hold.location);
 		}
 		publish(display);
-	}
-
-	/** True when simulated data is the active display source this tick. */
-	private boolean simulationActive()
-	{
-		return config.simulateFriends()
-			|| (config.simulateWhenOffline() && !backendOnline);
 	}
 
 	/**
@@ -381,12 +344,14 @@ public class FriendsMapPlugin extends Plugin
 
 				if (result.isSuccess())
 				{
+					backendOnline = true;
 					pendingLiveFriends = toFriendLocations(result.getResponse());
 					liveResultReady = true;
 				}
 				else if (result.getStatusCode() == 401 || result.getStatusCode() == 403)
 				{
 					// Stale/invalid token: drop it and re-register next poll.
+					backendOnline = true;
 					internalToken = "";
 					configManager.setConfiguration(FriendsMapConfig.GROUP, INTERNAL_TOKEN_KEY, "");
 				}
@@ -403,35 +368,6 @@ public class FriendsMapPlugin extends Plugin
 			finally
 			{
 				livePollInFlight = false;
-			}
-		});
-	}
-
-	/** Probe backend health off the client thread; result feeds the fallback. */
-	private void maybeSubmitHealthCheck()
-	{
-		if (healthCheckInFlight)
-		{
-			return;
-		}
-		healthCheckInFlight = true;
-		executor.submit(() ->
-		{
-			logNet("request sent: GET /api/v1/health");
-			try
-			{
-				HealthProbe probe = friendsMapClient.probe();
-				backendOnline = probe.isReachable();
-				logNet("health response: HTTP " + probe.getStatusCode() + " " + probe.getBody());
-			}
-			catch (Exception e)
-			{
-				backendOnline = false;
-				log.warn("{}: health check failed", LOG_CATEGORY, e);
-			}
-			finally
-			{
-				healthCheckInFlight = false;
 			}
 		});
 	}
