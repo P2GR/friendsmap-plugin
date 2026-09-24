@@ -14,7 +14,7 @@ repositories {
 }
 
 def runeLiteVersion = 'latest.release'
-def pluginMainClass = 'com.friendsmap.FriendsMapPluginTest'
+def pluginMainClass = fm_mainclass_full
 
 dependencies {
 	compileOnly group: 'net.runelite', name:'client', version: runeLiteVersion
@@ -31,7 +31,7 @@ dependencies {
 }
 
 group = 'com.friendsmap'
-version = '1.0-SNAPSHOT'
+version = fm_version
 
 tasks.withType(JavaCompile).configureEach {
 	options.encoding = 'UTF-8'
@@ -69,5 +69,5 @@ tasks.register('shadowJar', Jar) {
 
 	group = BasePlugin.BUILD_GROUP
 	archiveClassifier.set('shadow')
-	archiveFileName.set("${rootProject.name}-${project.version}-all.jar")
+	archiveFileName.set("${fm_archivesBaseName}-${project.version}-all.jar")
 }
