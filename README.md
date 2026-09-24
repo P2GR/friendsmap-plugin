@@ -82,7 +82,10 @@ the heartbeat data — it adds no network traffic.
 
 ## Notes
 
-- World map only shows the surface plane; caves/instances are not rendered.
+- The world map only shows the surface plane. Friends in caves, lairs and
+  instanced areas are drawn at their area's entrance instead (tooltip reads
+  "Shown at entrance"), so they stay findable; areas without a recorded
+  entrance only appear in the player list.
 - Minimap friend dots are rendered by the game itself; the plugin adds nothing
   there.
 

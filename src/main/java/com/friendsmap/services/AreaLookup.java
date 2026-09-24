@@ -25,9 +25,11 @@ import net.runelite.api.coords.WorldPoint;
  * {@code areas-LICENSE.txt} next to {@code areas.json}) so updated files can be
  * dropped in unchanged. Each entry is a name plus one box
  * ({@code x, y, width, height, plane}); names repeat across boxes when an area
- * consists of several of them. The remaining fields in the file ({@code
- * overworld}, {@code transposeX/Y}) only exist to draw map interiors over
- * their entrance and are intentionally ignored here.</p>
+ * consists of several of them. Entries may also carry an {@code overworld}
+ * point - the entrance of an interior that has no place on the surface map -
+ * which {@link #entranceFor} exposes so world-map renderers can draw off-map
+ * players at their entrance. {@code transposeX/Y} only serves map drawing and
+ * is ignored here.</p>
  *
  * <p>Matching is x/y/plane containment, not region ids: most areas are
  * smaller than a 64x64 region and plane separates, for example, the Kalphite
@@ -65,7 +67,10 @@ public class AreaLookup
 					{
 						continue; // skip malformed entries rather than failing the plugin
 					}
-					areas.add(new Area(entry.name, entry.area));
+					WorldPoint overworld = entry.overworld == null
+						? null
+						: new WorldPoint(entry.overworld.x, entry.overworld.y, entry.overworld.plane);
+					areas.add(new Area(entry.name, entry.area, overworld));
 				}
 			}
 		}
@@ -77,6 +82,25 @@ public class AreaLookup
 
 	/** Name of the area containing the point, or null when in the open world. */
 	public String nameFor(WorldPoint point)
+	{
+		Area best = bestFor(point);
+		return best == null ? null : best.name;
+	}
+
+	/**
+	 * Where the containing area opens onto the surface map (the data file's
+	 * {@code overworld}), or null when the point is in the open world or the
+	 * area has no recorded entrance. World-map renderers use this to place
+	 * players in caves, lairs and instances at their entrance.
+	 */
+	public WorldPoint entranceFor(WorldPoint point)
+	{
+		Area best = bestFor(point);
+		return best == null ? null : best.overworld;
+	}
+
+	/** Smallest (most specific) area containing the point, or null. */
+	private Area bestFor(WorldPoint point)
 	{
 		if (point == null)
 		{
@@ -91,7 +115,7 @@ public class AreaLookup
 				best = area;
 			}
 		}
-		return best == null ? null : best.name;
+		return best;
 	}
 
 	/** One named box from the data file. */
@@ -99,11 +123,13 @@ public class AreaLookup
 	{
 		private final String name;
 		private final JsonBox box;
+		private final WorldPoint overworld;
 
-		private Area(String name, JsonBox box)
+		private Area(String name, JsonBox box, WorldPoint overworld)
 		{
 			this.name = name;
 			this.box = box;
+			this.overworld = overworld;
 		}
 
 		private boolean contains(WorldPoint point)
@@ -124,6 +150,7 @@ public class AreaLookup
 	{
 		private String name;
 		private JsonBox area;
+		private JsonOverworld overworld;
 	}
 
 	private static final class JsonBox
@@ -132,6 +159,13 @@ public class AreaLookup
 		private int y;
 		private int width;
 		private int height;
+		private int plane;
+	}
+
+	private static final class JsonOverworld
+	{
+		private int x;
+		private int y;
 		private int plane;
 	}
 }

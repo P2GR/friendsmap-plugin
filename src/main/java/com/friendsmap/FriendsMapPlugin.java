@@ -52,8 +52,8 @@ import com.friendsmap.util.WorldPoints;
 @Slf4j
 @PluginDescriptor(
 	name = "Friends Map",
-	description = "Shows friends, clan members and friends-chat members on the world map and minimap.",
-	tags = {"friends", "map", "minimap", "tracking", "clan"}
+	description = "Shows friends, clan members and friends-chat members on the world map.",
+	tags = {"friends", "map", "tracking", "clan"}
 )
 public class FriendsMapPlugin extends Plugin
 {
@@ -171,6 +171,12 @@ public class FriendsMapPlugin extends Plugin
 			return;
 		}
 
+		if (INTERNAL_TOKEN_KEY.equals(event.getKey()))
+		{
+			// Internal bookkeeping (auth token), not a user setting.
+			return;
+		}
+
 		if ("sendLocationWilderness".equals(event.getKey()) && "true".equals(event.getNewValue()))
 		{
 			SwingUtilities.invokeLater(() ->
@@ -198,11 +204,14 @@ public class FriendsMapPlugin extends Plugin
 			});
 		}
 
-		// Display changes (colors, size, toggles) apply immediately. The
-		// snapshot is cleared so the icons are rebuilt with the new settings
-		// on the next heartbeat.
-		mapPointService.synchronize(currentFriends, config.showOnWorldMap());
-		publish(Collections.emptyList());
+		// Display changes (colors, size, toggles) apply immediately: drop the
+		// rendered points so their icons are rebuilt with the new settings,
+		// then re-publish the current snapshot so friends stay on the map
+		// until the next heartbeat (which may not come at all while the
+		// backend is offline).
+		List<FriendLocation> snapshot = new ArrayList<>(currentFriends);
+		mapPointService.clear();
+		publish(snapshot);
 	}
 
 	public List<FriendLocation> getCurrentFriends()

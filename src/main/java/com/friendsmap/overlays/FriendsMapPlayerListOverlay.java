@@ -365,15 +365,18 @@ public class FriendsMapPlayerListOverlay extends Overlay implements MouseListene
 		}
 	}
 
-	private static List<RowHit> buildRowHits(List<LineComponent> rows, List<FriendLocation> friends, int panelX, int panelY)
+	private List<RowHit> buildRowHits(List<LineComponent> rows, List<FriendLocation> friends, int panelX, int panelY)
 	{
 		List<RowHit> hits = new ArrayList<>(rows.size());
 		for (int i = 0; i < rows.size(); i++)
 		{
+			FriendLocation friend = friends.get(i);
 			Rectangle bounds = rows.get(i).getBounds();
+			// Focus the entrance for interiors - that is where their dot is.
+			WorldPoint entrance = areaLookup.entranceFor(friend.getLocation());
 			hits.add(new RowHit(
 				new Rectangle(panelX + bounds.x, panelY + bounds.y, bounds.width, bounds.height),
-				friends.get(i).getLocation()));
+				entrance != null ? entrance : friend.getLocation()));
 		}
 		return hits;
 	}

@@ -9,7 +9,7 @@ import net.runelite.api.coords.WorldPoint;
 
 /**
  * Immutable carrier for one visible friend's location snapshot.
- * Single source of truth consumed by world map and minimap.
+ * Single source of truth consumed by the world map and player list.
  */
 public final class FriendLocation
 {
@@ -60,9 +60,9 @@ public final class FriendLocation
 	}
 
 	/**
-	 * True when the friend can be rendered on the world map.
-	 * World map only covers the surface plane; caves, instances and
-	 * other planes are skipped.
+	 * True when the friend's own position can be rendered on the world map.
+	 * The world map only covers the surface plane; players on other planes
+	 * are drawn at their area's entrance instead (see MapPointService).
 	 */
 	public boolean isOnWorldMap()
 	{

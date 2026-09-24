@@ -76,4 +76,19 @@ public class AreaLookupTest
 		assertEquals("Player-owned house", lookup.nameFor(new WorldPoint(2047, 5823, 3)));
 		assertNull(lookup.nameFor(new WorldPoint(1855, 5695, 0)));
 	}
+
+	@Test
+	public void drawsInteriorsAtTheirEntrance()
+	{
+		// Off-atlas interiors carry their entrance ("overworld") in the data;
+		// world-map dots are drawn there so dungeon friends stay findable.
+		WorldPoint callisto = new WorldPoint(3352, 10320, 0);
+		assertEquals("Callisto's Den", lookup.nameFor(callisto));
+		assertEquals(new WorldPoint(3292, 3850, 0), lookup.entranceFor(callisto));
+
+		// Open world, and areas without a recorded entrance, have no fallback.
+		assertNull(lookup.entranceFor(new WorldPoint(3100, 3400, 0)));
+		assertNull(lookup.entranceFor(new WorldPoint(1900, 5750, 0)));
+		assertNull(lookup.entranceFor(null));
+	}
 }

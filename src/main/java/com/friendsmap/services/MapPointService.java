@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Set;
 import javax.inject.Inject;
 import net.runelite.api.Point;
+import net.runelite.api.coords.WorldPoint;
 import com.friendsmap.FriendsMapConfig;
 import com.friendsmap.model.FriendLocation;
 import com.friendsmap.util.FriendIconFactory;
@@ -44,7 +45,8 @@ public class MapPointService
 
 	/**
 	 * Reconcile the point set with the given snapshot.
-	 * Only surface-plane friends become points.
+	 * Surface-plane friends become points at their own position; friends in
+	 * caves, lairs and instances are placed at their area's entrance.
 	 */
 	public synchronized void synchronize(Collection<FriendLocation> friends, boolean worldMapEnabled)
 	{
@@ -53,7 +55,13 @@ public class MapPointService
 		{
 			seen.add(friend.getName());
 
-			if (!worldMapEnabled || !friend.isOnWorldMap())
+			// Interiors have no place on the surface map; when the area data
+			// knows their entrance, the dot is drawn there instead so the
+			// friend stays findable.
+			WorldPoint entrance = areaLookup.entranceFor(friend.getLocation());
+			boolean atEntrance = entrance != null;
+			WorldPoint mapPoint = atEntrance ? entrance : friend.getLocation();
+			if (!worldMapEnabled || (!atEntrance && !friend.isOnWorldMap()))
 			{
 				continue;
 			}
@@ -61,7 +69,7 @@ public class MapPointService
 			WorldMapPoint existing = pointsByName.get(friend.getName());
 			Integer knownWorld = worldsByName.get(friend.getName());
 			if (existing != null && existing.getWorldPoint() != null
-				&& existing.getWorldPoint().equals(friend.getLocation())
+				&& existing.getWorldPoint().equals(mapPoint)
 				&& knownWorld != null && knownWorld == friend.getWorld())
 			{
 				continue;
@@ -73,13 +81,13 @@ public class MapPointService
 			}
 
 			String displayName = mapLabel(friend);
-			WorldMapPoint point = new WorldMapPoint(friend.getLocation(), FriendIconFactory.worldMapDot(friend.getRelation(), config, displayName, friend.getWorld() == 0));
+			WorldMapPoint point = new WorldMapPoint(mapPoint, FriendIconFactory.worldMapDot(friend.getRelation(), config, displayName, friend.getWorld() == 0));
 			if (displayName != null)
 			{
 				// Anchor the dot's center on the world point; the name extends right.
 				point.setImagePoint(new Point(config.dotSize() / 2, point.getImage().getHeight() / 2));
 			}
-			point.setTooltip(buildTooltip(friend));
+			point.setTooltip(buildTooltip(friend, atEntrance));
 			point.setName(friend.getName());
 			point.setSnapToEdge(true);
 			point.setJumpOnClick(true);
@@ -127,7 +135,7 @@ public class MapPointService
 		return world ? friend.getWorldLabel() : null;
 	}
 
-	private String buildTooltip(FriendLocation friend)
+	private String buildTooltip(FriendLocation friend, boolean atEntrance)
 	{
 		long ageSeconds = Duration.between(friend.getLastSeen(), Instant.now()).getSeconds();
 		String header = friend.getWorld() == 0
@@ -137,6 +145,7 @@ public class MapPointService
 		return header
 			+ "<br>" + friend.getRelation().getLabel()
 			+ (area == null ? "" : "<br>" + area)
+			+ (atEntrance ? "<br>Shown at entrance" : "")
 			+ "<br>" + ageSeconds + "s ago";
 	}
 }

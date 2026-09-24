@@ -32,7 +32,7 @@ public interface FriendsMapConfig extends Config
 
 	@ConfigSection(
 		name = "Colors & Sizes",
-		description = "Dot appearance on map and minimap",
+		description = "Dot appearance on the world map",
 		position = 2
 	)
 	String colorsSection = "colors";
@@ -47,7 +47,7 @@ public interface FriendsMapConfig extends Config
 	@ConfigItem(
 		keyName = "showOnWorldMap",
 		name = "Show on world map",
-		description = "Draw friend icons on the world map (surface only).",
+		description = "Draw friend icons on the world map. Friends in caves, lairs and instances are drawn at their area's entrance.",
 		section = displaySection,
 		position = 0
 	)
@@ -241,7 +241,7 @@ public interface FriendsMapConfig extends Config
 	@ConfigItem(
 		keyName = "dotSize",
 		name = "Dot size",
-		description = "Diameter in pixels for world map and minimap dots.",
+		description = "Diameter in pixels for world map dots.",
 		section = colorsSection,
 		position = 3
 	)

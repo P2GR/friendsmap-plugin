@@ -6,7 +6,7 @@ package com.friendsmap.model;
 
 /**
  * How a visible player relates to the local player.
- * Determines icon colors on map and minimap.
+ * Determines icon colors on the world map.
  */
 public enum Relation
 {
