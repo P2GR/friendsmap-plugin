@@ -4,6 +4,7 @@
  */
 package com.friendsmap.util;
 
+import java.util.Arrays;
 import net.runelite.api.Client;
 import net.runelite.api.Player;
 import net.runelite.api.WorldView;
@@ -39,10 +40,21 @@ public final class WorldPoints
 		WorldPoint resolved = raw;
 		if (player.getLocalLocation() != null)
 		{
+			WorldView worldView = client.getWorldView(player.getLocalLocation().getWorldView());
 			WorldPoint template = WorldPoint.fromLocalInstance(client, player.getLocalLocation());
 			if (template != null)
 			{
 				resolved = template;
+			}
+			if (worldView != null && worldView.getPlane() > 0
+				&& Arrays.equals(worldView.getMapRegions(), NMZ_MAP_REGIONS))
+			{
+				// Nightmare Zone dreams are an instance of the King Black Dragon
+				// lair map (region 9033) run above ground level - the exact
+				// coordinates the lair's own box covers. Shift the resolved point
+				// one region north into the zone's own box so dreamers never label
+				// as the lair.
+				return new WorldPoint(resolved.getX(), resolved.getY() + NMZ_SHIFT_Y, resolved.getPlane());
 			}
 		}
 		if (!inPlayerOwnedHouse(resolved) && inPlayerOwnedHouse(raw))
@@ -57,6 +69,11 @@ public final class WorldPoints
 	private static final int POH_Y = 5696;
 	private static final int POH_WIDTH = 192;
 	private static final int POH_HEIGHT = 128;
+
+	/** Nightmare Zone dreams: an instance of this region above ground level. */
+	private static final int[] NMZ_MAP_REGIONS = {9033};
+	/** The zone's box is the lair map shifted one region (64 tiles) north. */
+	private static final int NMZ_SHIFT_Y = 64;
 
 	private static boolean inPlayerOwnedHouse(WorldPoint point)
 	{

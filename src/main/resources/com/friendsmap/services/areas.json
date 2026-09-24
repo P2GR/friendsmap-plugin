@@ -612,7 +612,7 @@
     "transposeY": 5280
   },
   {
-    "name": "Deep Winderness Dungeon",
+    "name": "Deep Wilderness Dungeon",
     "area": {
       "x": 3008,
       "y": 10304,
@@ -748,7 +748,7 @@
     "transposeY": 0
   },
   {
-    "name": "Ecotfundus",
+    "name": "Ectofuntus",
     "area": {
       "x": 3672,
       "y": 9877,
@@ -1088,7 +1088,7 @@
     "transposeY": 0
   },
   {
-    "name": "Ice Queen's Layer",
+    "name": "Ice Queen's Lair",
     "area": {
       "x": 2816,
       "y": 9888,
@@ -1105,7 +1105,7 @@
     "transposeY": 0
   },
   {
-    "name": "Ice Queen's Layer",
+    "name": "Ice Queen's Lair",
     "area": {
       "x": 2880,
       "y": 9920,
@@ -1360,7 +1360,7 @@
     "transposeY": 0
   },
   {
-    "name": "Key Master",
+    "name": "Cerberus' Lair",
     "area": {
       "x": 1280,
       "y": 1224,
@@ -1394,7 +1394,7 @@
     "transposeY": 0
   },
   {
-    "name": "King Black Dragon Liar",
+    "name": "King Black Dragon Lair",
     "area": {
       "x": 2248,
       "y": 4672,
@@ -1513,7 +1513,7 @@
     "transposeY": 0
   },
   {
-    "name": "Ledgends' Guild dungeon",
+    "name": "Legends' Guild dungeon",
     "area": {
       "x": 2688,
       "y": 9728,
@@ -1802,7 +1802,7 @@
     "transposeY": 4032
   },
   {
-    "name": "Myreque Hideout (Canefis)",
+    "name": "Myreque Hideout (Canifis)",
     "area": {
       "x": 3464,
       "y": 9800,
@@ -1819,7 +1819,7 @@
     "transposeY": 0
   },
   {
-    "name": "Myreque Hideout (Canefis)",
+    "name": "Myreque Hideout (Canifis)",
     "area": {
       "x": 3480,
       "y": 9856,
@@ -1836,7 +1836,7 @@
     "transposeY": -128
   },
   {
-    "name": "Myreque Hideout (Canefis)",
+    "name": "Myreque Hideout (Canifis)",
     "area": {
       "x": 3512,
       "y": 9792,
@@ -1853,7 +1853,7 @@
     "transposeY": -64
   },
   {
-    "name": "Myreque Hideout (Canefis)",
+    "name": "Myreque Hideout (Canifis)",
     "area": {
       "x": 3520,
       "y": 9728,
@@ -1870,7 +1870,7 @@
     "transposeY": -64
   },
   {
-    "name": "Myreque Hideout (Canefis)",
+    "name": "Myreque Hideout (Canifis)",
     "area": {
       "x": 3584,
       "y": 9664,
@@ -3385,6 +3385,716 @@
       "width": 192,
       "height": 128,
       "plane": 3
+    }
+  },
+  {
+    "name": "Obor's Lair",
+    "area": {
+      "x": 3074,
+      "y": 9782,
+      "width": 32,
+      "height": 32,
+      "plane": 0
+    }
+  },
+  {
+    "name": "Bryophyta's Lair",
+    "area": {
+      "x": 3204,
+      "y": 9916,
+      "width": 32,
+      "height": 32,
+      "plane": 0
+    }
+  },
+  {
+    "name": "Alchemical Hydra's Lair",
+    "area": {
+      "x": 1348,
+      "y": 10248,
+      "width": 32,
+      "height": 32,
+      "plane": 0
+    }
+  },
+  {
+    "name": "Sarachnis's Lair",
+    "area": {
+      "x": 1824,
+      "y": 9884,
+      "width": 32,
+      "height": 32,
+      "plane": 0
+    }
+  },
+  {
+    "name": "Skotizo's Lair",
+    "area": {
+      "x": 2254,
+      "y": 5644,
+      "width": 32,
+      "height": 32,
+      "plane": 0
+    }
+  },
+  {
+    "name": "Scurrius's Lair",
+    "area": {
+      "x": 3282,
+      "y": 9850,
+      "width": 32,
+      "height": 32,
+      "plane": 0
+    }
+  },
+  {
+    "name": "Amoxliatl's Lair",
+    "area": {
+      "x": 1346,
+      "y": 4494,
+      "width": 32,
+      "height": 32,
+      "plane": 0
+    }
+  },
+  {
+    "name": "The Hueycoatl's Lair",
+    "area": {
+      "x": 1492,
+      "y": 3274,
+      "width": 32,
+      "height": 32,
+      "plane": 0
+    }
+  },
+  {
+    "name": "Araxxor's Lair",
+    "area": {
+      "x": 3614,
+      "y": 9796,
+      "width": 32,
+      "height": 32,
+      "plane": 0
+    }
+  },
+  {
+    "name": "Phantom Muspah's Lair",
+    "area": {
+      "x": 2892,
+      "y": 10300,
+      "width": 32,
+      "height": 32,
+      "plane": 0
+    }
+  },
+  {
+    "name": "Vardorvis's Lair",
+    "area": {
+      "x": 1112,
+      "y": 3400,
+      "width": 32,
+      "height": 32,
+      "plane": 0
+    }
+  },
+  {
+    "name": "The Whisperer's Lair",
+    "area": {
+      "x": 2640,
+      "y": 6352,
+      "width": 32,
+      "height": 32,
+      "plane": 0
+    }
+  },
+  {
+    "name": "The Leviathan's Lair",
+    "area": {
+      "x": 2064,
+      "y": 6356,
+      "width": 32,
+      "height": 32,
+      "plane": 0
+    }
+  },
+  {
+    "name": "Crazy archaeologist's Lair",
+    "area": {
+      "x": 2960,
+      "y": 3686,
+      "width": 32,
+      "height": 32,
+      "plane": 0
+    }
+  },
+  {
+    "name": "Chaos Fanatic's Lair",
+    "area": {
+      "x": 2962,
+      "y": 3830,
+      "width": 32,
+      "height": 32,
+      "plane": 0
+    }
+  },
+  {
+    "name": "Deranged archaeologist's Lair",
+    "area": {
+      "x": 3666,
+      "y": 3690,
+      "width": 32,
+      "height": 32,
+      "plane": 0
+    }
+  },
+  {
+    "name": "Venenatis's Lair",
+    "area": {
+      "x": 3302,
+      "y": 3782,
+      "width": 32,
+      "height": 32,
+      "plane": 0
+    }
+  },
+  {
+    "name": "Artio's Lair",
+    "area": {
+      "x": 3100,
+      "y": 3660,
+      "width": 32,
+      "height": 32,
+      "plane": 0
+    }
+  },
+  {
+    "name": "Chambers of Xeric",
+    "area": {
+      "x": 1208,
+      "y": 3520,
+      "width": 64,
+      "height": 64,
+      "plane": 0
+    }
+  },
+  {
+    "name": "Theatre of Blood",
+    "area": {
+      "x": 3624,
+      "y": 3184,
+      "width": 64,
+      "height": 64,
+      "plane": 0
+    }
+  },
+  {
+    "name": "Tombs of Amascut",
+    "area": {
+      "x": 3312,
+      "y": 2688,
+      "width": 64,
+      "height": 64,
+      "plane": 0
+    }
+  },
+  {
+    "name": "Nightmare Zone",
+    "area": {
+      "x": 2568,
+      "y": 3080,
+      "width": 64,
+      "height": 64,
+      "plane": 0
+    }
+  },
+  {
+    "name": "Nightmare Zone",
+    "area": {
+      "x": 2240,
+      "y": 4736,
+      "width": 64,
+      "height": 64,
+      "plane": 0
+    },
+    "overworld": {
+      "x": 2605,
+      "y": 3115,
+      "plane": 0
+    }
+  },
+  {
+    "name": "Nightmare Zone",
+    "area": {
+      "x": 2240,
+      "y": 4736,
+      "width": 64,
+      "height": 64,
+      "plane": 1
+    },
+    "overworld": {
+      "x": 2605,
+      "y": 3115,
+      "plane": 0
+    }
+  },
+  {
+    "name": "Nightmare Zone",
+    "area": {
+      "x": 2240,
+      "y": 4736,
+      "width": 64,
+      "height": 64,
+      "plane": 2
+    },
+    "overworld": {
+      "x": 2605,
+      "y": 3115,
+      "plane": 0
+    }
+  },
+  {
+    "name": "Nightmare Zone",
+    "area": {
+      "x": 2240,
+      "y": 4736,
+      "width": 64,
+      "height": 64,
+      "plane": 3
+    },
+    "overworld": {
+      "x": 2605,
+      "y": 3115,
+      "plane": 0
+    }
+  },
+  {
+    "name": "Pest Control",
+    "area": {
+      "x": 2624,
+      "y": 2592,
+      "width": 64,
+      "height": 64,
+      "plane": 0
+    }
+  },
+  {
+    "name": "Castle Wars",
+    "area": {
+      "x": 2352,
+      "y": 3040,
+      "width": 128,
+      "height": 128,
+      "plane": 0
+    }
+  },
+  {
+    "name": "Soul Wars",
+    "area": {
+      "x": 2112,
+      "y": 2816,
+      "width": 192,
+      "height": 192,
+      "plane": 0
+    }
+  },
+  {
+    "name": "Hallowed Sepulchre",
+    "area": {
+      "x": 3654,
+      "y": 3387,
+      "width": 5,
+      "height": 4,
+      "plane": 0
+    }
+  },
+  {
+    "name": "Wintertodt",
+    "area": {
+      "x": 1592,
+      "y": 3944,
+      "width": 64,
+      "height": 64,
+      "plane": 0
+    }
+  },
+  {
+    "name": "Tempoross Cove",
+    "area": {
+      "x": 3000,
+      "y": 2816,
+      "width": 64,
+      "height": 64,
+      "plane": 0
+    }
+  },
+  {
+    "name": "Last Man Standing",
+    "area": {
+      "x": 3104,
+      "y": 3600,
+      "width": 64,
+      "height": 64,
+      "plane": 0
+    }
+  },
+  {
+    "name": "Mage Training Arena",
+    "area": {
+      "x": 3328,
+      "y": 3280,
+      "width": 64,
+      "height": 64,
+      "plane": 0
+    }
+  },
+  {
+    "name": "Pyramid Plunder",
+    "area": {
+      "x": 3256,
+      "y": 2760,
+      "width": 64,
+      "height": 64,
+      "plane": 0
+    }
+  },
+  {
+    "name": "Barbarian Assault",
+    "area": {
+      "x": 2496,
+      "y": 3536,
+      "width": 64,
+      "height": 64,
+      "plane": 0
+    }
+  },
+  {
+    "name": "Barbarian Assault",
+    "area": {
+      "x": 2528,
+      "y": 5216,
+      "width": 128,
+      "height": 128,
+      "plane": 0
+    }
+  },
+  {
+    "name": "Fishing Trawler",
+    "area": {
+      "x": 2632,
+      "y": 3128,
+      "width": 64,
+      "height": 64,
+      "plane": 0
+    }
+  },
+  {
+    "name": "Trouble Brewing",
+    "area": {
+      "x": 3776,
+      "y": 2944,
+      "width": 64,
+      "height": 64,
+      "plane": 0
+    }
+  },
+  {
+    "name": "Guardians of the Rift",
+    "area": {
+      "x": 3584,
+      "y": 9456,
+      "width": 64,
+      "height": 64,
+      "plane": 0
+    }
+  },
+  {
+    "name": "Tithe Farm",
+    "area": {
+      "x": 1792,
+      "y": 3472,
+      "width": 64,
+      "height": 64,
+      "plane": 0
+    }
+  },
+  {
+    "name": "Puro-Puro",
+    "area": {
+      "x": 2528,
+      "y": 4256,
+      "width": 128,
+      "height": 128,
+      "plane": 0
+    }
+  },
+  {
+    "name": "Emir's Arena",
+    "area": {
+      "x": 3328,
+      "y": 3200,
+      "width": 64,
+      "height": 64,
+      "plane": 0
+    }
+  },
+  {
+    "name": "Sorceress's Garden",
+    "area": {
+      "x": 2880,
+      "y": 5440,
+      "width": 64,
+      "height": 64,
+      "plane": 0
+    }
+  },
+  {
+    "name": "Darkmeyer",
+    "area": {
+      "x": 3536,
+      "y": 3296,
+      "width": 128,
+      "height": 128,
+      "plane": 0
+    }
+  },
+  {
+    "name": "Meiyerditch",
+    "area": {
+      "x": 3504,
+      "y": 3152,
+      "width": 224,
+      "height": 192,
+      "plane": 0
+    }
+  },
+  {
+    "name": "Slepe",
+    "area": {
+      "x": 3664,
+      "y": 3272,
+      "width": 120,
+      "height": 128,
+      "plane": 0
+    }
+  },
+  {
+    "name": "Zul-Andra",
+    "area": {
+      "x": 2160,
+      "y": 3028,
+      "width": 64,
+      "height": 64,
+      "plane": 0
+    }
+  },
+  {
+    "name": "Shadow Dungeon",
+    "area": {
+      "x": 2656,
+      "y": 5056,
+      "width": 64,
+      "height": 64,
+      "plane": 0
+    }
+  },
+  {
+    "name": "Dream World",
+    "area": {
+      "x": 1728,
+      "y": 5048,
+      "width": 64,
+      "height": 64,
+      "plane": 2
+    }
+  },
+  {
+    "name": "Mourner Tunnels",
+    "area": {
+      "x": 1920,
+      "y": 4608,
+      "width": 128,
+      "height": 64,
+      "plane": 0
+    },
+    "overworld": {
+      "x": 2542,
+      "y": 3327,
+      "plane": 0
+    }
+  },
+  {
+    "name": "Ape Atoll Dungeon",
+    "area": {
+      "x": 2720,
+      "y": 9088,
+      "width": 64,
+      "height": 64,
+      "plane": 0
+    },
+    "overworld": {
+      "x": 2763,
+      "y": 2703,
+      "plane": 0
+    }
+  },
+  {
+    "name": "Temple of Ikov",
+    "area": {
+      "x": 2656,
+      "y": 9824,
+      "width": 64,
+      "height": 64,
+      "plane": 0
+    },
+    "overworld": {
+      "x": 2677,
+      "y": 3405,
+      "plane": 0
+    }
+  },
+  {
+    "name": "Charred Dungeon",
+    "area": {
+      "x": 2648,
+      "y": 8832,
+      "width": 64,
+      "height": 64,
+      "plane": 0
+    }
+  },
+  {
+    "name": "Ynysdail Cavern",
+    "area": {
+      "x": 2240,
+      "y": 9848,
+      "width": 64,
+      "height": 64,
+      "plane": 0
+    }
+  },
+  {
+    "name": "Sunbleak Cave",
+    "area": {
+      "x": 2192,
+      "y": 8704,
+      "width": 64,
+      "height": 64,
+      "plane": 0
+    }
+  },
+  {
+    "name": "Elven rabbit cave",
+    "area": {
+      "x": 3256,
+      "y": 12544,
+      "width": 64,
+      "height": 64,
+      "plane": 0
+    },
+    "overworld": {
+      "x": 2264,
+      "y": 3418,
+      "plane": 0
+    }
+  },
+  {
+    "name": "Buccaneers' Laboratory",
+    "area": {
+      "x": 2048,
+      "y": 10040,
+      "width": 64,
+      "height": 64,
+      "plane": 0
+    }
+  },
+  {
+    "name": "Dragon Nest",
+    "area": {
+      "x": 1208,
+      "y": 9464,
+      "width": 64,
+      "height": 64,
+      "plane": 0
+    }
+  },
+  {
+    "name": "Shellbane Gryphon Cave",
+    "area": {
+      "x": 3144,
+      "y": 8840,
+      "width": 64,
+      "height": 64,
+      "plane": 0
+    }
+  },
+  {
+    "name": "Grimstone Dungeon",
+    "area": {
+      "x": 2872,
+      "y": 10432,
+      "width": 64,
+      "height": 64,
+      "plane": 0
+    }
+  },
+  {
+    "name": "Karamjan Temple",
+    "area": {
+      "x": 2816,
+      "y": 9224,
+      "width": 64,
+      "height": 64,
+      "plane": 0
+    },
+    "overworld": {
+      "x": 2943,
+      "y": 2896,
+      "plane": 0
+    }
+  },
+  {
+    "name": "Kurask Lair",
+    "area": {
+      "x": 1144,
+      "y": 9168,
+      "width": 64,
+      "height": 64,
+      "plane": 0
+    },
+    "overworld": {
+      "x": 1191,
+      "y": 2786,
+      "plane": 0
+    }
+  },
+  {
+    "name": "The Scar",
+    "area": {
+      "x": 1984,
+      "y": 6304,
+      "width": 128,
+      "height": 160,
+      "plane": 0
+    }
+  },
+  {
+    "name": "Lithkren Vault",
+    "area": {
+      "x": 1536,
+      "y": 5056,
+      "width": 64,
+      "height": 64,
+      "plane": 0
+    }
+  },
+  {
+    "name": "Lassar Undercity",
+    "area": {
+      "x": 2528,
+      "y": 6240,
+      "width": 256,
+      "height": 256,
+      "plane": 0
     }
   }
 ]

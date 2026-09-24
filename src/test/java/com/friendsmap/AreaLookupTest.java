@@ -91,4 +91,75 @@ public class AreaLookupTest
 		assertNull(lookup.entranceFor(new WorldPoint(1900, 5750, 0)));
 		assertNull(lookup.entranceFor(null));
 	}
+
+	@Test
+	public void findsNewBossLairs()
+	{
+		assertEquals("Obor's Lair", lookup.nameFor(new WorldPoint(3091, 9799, 0)));
+		assertEquals("Bryophyta's Lair", lookup.nameFor(new WorldPoint(3220, 9933, 0)));
+		assertEquals("Alchemical Hydra's Lair", lookup.nameFor(new WorldPoint(1364, 10265, 0)));
+		assertEquals("Sarachnis's Lair", lookup.nameFor(new WorldPoint(1840, 9900, 0)));
+		assertEquals("Skotizo's Lair", lookup.nameFor(new WorldPoint(2271, 5661, 0)));
+		assertEquals("Scurrius's Lair", lookup.nameFor(new WorldPoint(3299, 9867, 0)));
+		assertEquals("Vardorvis's Lair", lookup.nameFor(new WorldPoint(1128, 3417, 0)));
+		assertEquals("The Leviathan's Lair", lookup.nameFor(new WorldPoint(2081, 6372, 0)));
+		assertEquals("Venenatis's Lair", lookup.nameFor(new WorldPoint(3319, 3798, 0)));
+	}
+
+	@Test
+	public void findsMinigames()
+	{
+		assertEquals("Pest Control", lookup.nameFor(new WorldPoint(2658, 2625, 0)));
+		assertEquals("Castle Wars", lookup.nameFor(new WorldPoint(2407, 3105, 0)));
+		assertEquals("Soul Wars", lookup.nameFor(new WorldPoint(2206, 2900, 0)));
+		assertEquals("Wintertodt", lookup.nameFor(new WorldPoint(1630, 3981, 0)));
+		assertEquals("Tempoross Cove", lookup.nameFor(new WorldPoint(3035, 2850, 0)));
+		assertEquals("Last Man Standing", lookup.nameFor(new WorldPoint(3142, 3636, 0)));
+		assertEquals("Mage Training Arena", lookup.nameFor(new WorldPoint(3364, 3312, 0)));
+		assertEquals("Pyramid Plunder", lookup.nameFor(new WorldPoint(3289, 2793, 0)));
+		assertEquals("Puro-Puro", lookup.nameFor(new WorldPoint(2593, 4320, 0)));
+		assertEquals("Sorceress's Garden", lookup.nameFor(new WorldPoint(2912, 5472, 0)));
+		assertEquals("Guardians of the Rift", lookup.nameFor(new WorldPoint(3616, 9492, 0)));
+		assertEquals("Barbarian Assault", lookup.nameFor(new WorldPoint(2533, 3571, 0)));
+		assertEquals("Barbarian Assault", lookup.nameFor(new WorldPoint(2593, 5280, 0)));
+	}
+
+	@Test
+	public void findsTownsAndNewDungeons()
+	{
+		assertEquals("Darkmeyer", lookup.nameFor(new WorldPoint(3597, 3360, 0)));
+		assertEquals("Meiyerditch", lookup.nameFor(new WorldPoint(3615, 3250, 0)));
+		assertEquals("Slepe", lookup.nameFor(new WorldPoint(3724, 3335, 0)));
+		assertEquals("Zul-Andra", lookup.nameFor(new WorldPoint(2193, 3060, 0)));
+		assertEquals("The Scar", lookup.nameFor(new WorldPoint(2039, 6428, 0)));
+		// Nested: the boss arena wins over the surrounding city.
+		assertEquals("The Whisperer's Lair", lookup.nameFor(new WorldPoint(2656, 6369, 0)));
+		assertEquals("Lassar Undercity", lookup.nameFor(new WorldPoint(2560, 6280, 0)));
+		assertEquals("Mourner Tunnels", lookup.nameFor(new WorldPoint(1950, 4630, 0)));
+		assertEquals("Dream World", lookup.nameFor(new WorldPoint(1760, 5087, 2)));
+		assertEquals("Kurask Lair", lookup.nameFor(new WorldPoint(1182, 9200, 0)));
+		assertEquals("Karamjan Temple", lookup.nameFor(new WorldPoint(2848, 9256, 0)));
+	}
+
+	@Test
+	public void nightmareZoneDreamsDoNotLabelAsKbdLair()
+	{
+		// Dreams run in the lair's own map (region 9033) above ground level;
+		// the sender shifts them one region north into the zone's own box.
+		for (int plane = 0; plane < 4; plane++)
+		{
+			assertEquals("Nightmare Zone", lookup.nameFor(new WorldPoint(2272, 4768, plane)));
+		}
+		assertEquals("King Black Dragon Lair", lookup.nameFor(new WorldPoint(2260, 4700, 0)));
+		// The lobby is real overworld and doubles as the dream's entrance.
+		assertEquals("Nightmare Zone", lookup.nameFor(new WorldPoint(2605, 3115, 0)));
+		assertEquals(new WorldPoint(2605, 3115, 0), lookup.entranceFor(new WorldPoint(2272, 4768, 1)));
+	}
+
+	@Test
+	public void findsRenamedAreas()
+	{
+		assertEquals("Cerberus' Lair", lookup.nameFor(new WorldPoint(1305, 1273, 0)));
+		assertEquals("King Black Dragon Lair", lookup.nameFor(new WorldPoint(2260, 4700, 0)));
+	}
 }
